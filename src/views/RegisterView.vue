@@ -10,13 +10,20 @@
               </div>
               <div class="card fat">
                 <div class="card-body">
-                  <h4 class="card-title">Login</h4>
+                  <h4 class="card-title">Nueva cuenta</h4>
                   <form v-on:submit.prevent="login" class="my-login-validation" novalidate="">
+                  <div class="form-group">
+                      <label for="name">Nombre</label>
+                      <input id="name" type="name" class="form-control" name="name" value="" v-model="name" required autofocus>
+                      <div class="invalid-feedback">
+                        No es un usuario válido
+                      </div>
+                    </div>
                     <div class="form-group">
-                      <label for="user">Username</label>
+                      <label for="user">Usuario</label>
                       <input id="user" type="user" class="form-control" name="user" value="" v-model="user" required autofocus>
                       <div class="invalid-feedback">
-                        Email is invalid
+                        No es un usuario válido
                       </div>
                     </div>
 
@@ -25,17 +32,23 @@
                       </label>
                       <input id="password" type="password" class="form-control" name="password" v-model="password" required data-eye>
                         <div class="invalid-feedback">
-                          Password is required
+                          La contraseña es requerida
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="repeat_password">Confirmar contraseña
+                      </label>
+                      <input id="repeat_password" type="password" class="form-control" name="repeat_password" v-model="repeat_password" required data-eye>
+                        <div class="invalid-feedback">
+                          Debes confirmar la contraseña
                         </div>
                     </div>
 
                     <div class="form-group m-0 mt-4">
                       <button type="submit" class="btn btn-primary btn-block">
-                        Login
+                        Registrar
                       </button>
-                    </div>
-                    <div class="mt-4 text-center">
-                      ¿No tienes una cuenta? <router-link to="/register">Crea una</router-link>
                     </div>
                     <div class="alert alert-danger" role="alert" v-if="error">
                       {{error_msg}}
@@ -57,36 +70,42 @@
   import axios from 'axios';
   // import {mapActions} from 'vuex';
   export default {
-    name: 'HomeView',
+    name: 'RegisterView',
     components: {
     },
     data: function(){
       return {
         user: "",
         password: "",
+        repeat_password: "",
+        name: "",
         error: false,
         error_msg: "",
       }
     },
     methods:{
       login(){
-        let formdata = new FormData();
-        formdata.append("user",this.user);
-        formdata.append("password",this.password);
+        if(this.password != this.repeat_password){
+            this.error = true;
+            this.error_msg = 'Password confirm dont match';
+        }else{
+            let formdata = new FormData();
+            formdata.append("name",this.name);
+            formdata.append("user",this.user);
+            formdata.append("password",this.password);
 
-    axios.post("http://localhost:86/appTest/CodeIgniter/index.php/api/user/login",formdata)
-        .then( data => {
-            if(data.data.status != false){
-              localStorage.token = data.data.data.token;
-              this.$router.push('dashboard');
-            }else{
-              this.error = true;
-              this.error_msg = data.data.message;
-            }
-        })  
-      },
-      // ...mapActions(['mockLogin'])
-      
+            axios.post("http://localhost:86/appTest/CodeIgniter/index.php/api/user/register",formdata)
+            .then( data => {
+                if(data.data.status != false){
+                this.$router.push('/');
+                }else{
+                this.error = true;
+                this.error_msg = data.data.message;
+                }
+            }) 
+        }
+ 
+      }
     }
   }
 </script>
