@@ -74,6 +74,7 @@
         formdata.append("user",this.user);
         formdata.append("password",this.password);
 
+//cambiar por la url de tu local
     axios.post("http://localhost:86/appTest/CodeIgniter/index.php/api/user/login",formdata)
         .then( data => {
             if(data.data.status != false){
